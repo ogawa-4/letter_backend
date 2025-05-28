@@ -1,3 +1,4 @@
+import os
 import psycopg2
 from fastapi import FastAPI
 from pydantic import BaseModel #データ検証ライブラリ。データの整合性チェック。
@@ -22,7 +23,8 @@ class Letter(BaseModel):
     longitude: float
 
 # データベースとのコネクションを確立
-conn=psycopg2.connect("host=localhost dbname=letter_db user=ogawa password=SYugo1002")
+DATABASE_URL=os.environ.get("DATABASE_URL")
+conn=psycopg2.connect(DATABASE_URL)
 
 #ルートエンドポイント。POSTリクエストでメッセージを返す。
 @app.post("/letters/")#()内のURLにPOSTリクエストが来たら、この関数が呼ばれる。
