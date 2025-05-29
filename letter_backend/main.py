@@ -3,6 +3,7 @@ import psycopg2
 from fastapi import FastAPI
 from pydantic import BaseModel #データ検証ライブラリ。データの整合性チェック。
 from fastapi.middleware.cors import CORSMiddleware #CORSミドルウェア。異なるオリジン間のリクエストを許可するためのもの。
+from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
 
 app=FastAPI() #FastAPIのインスタンスを作成
 
@@ -23,8 +24,23 @@ class Letter(BaseModel):
     longitude: float
 
 # データベースとのコネクションを確立
-DATABASE_URL=os.environ.get("DATABASE_URL")
-conn=psycopg2.connect(DATABASE_URL)
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+# URLにsslmode=requireを付け足す処理
+def add_sslmode(url):
+    if not url:
+        raise ValueError("DATABASE_URLが設定されていません。")
+    parsed_url = urlparse(url)
+    query = parse_qs(parsed_url.query)
+    if "sslmode" not in query:
+        query["sslmode"] = ["require"]
+    new_query = urlencode(query, doseq=True)
+    new_url = urlunparse(parsed_url._replace(query=new_query))
+    return new_url
+
+DATABASE_URL = add_sslmode(DATABASE_URL)
+
+conn = psycopg2.connect(DATABASE_URL)
 
 #ルートエンドポイント。POSTリクエストでメッセージを返す。
 @app.post("/letters/")#()内のURLにPOSTリクエストが来たら、この関数が呼ばれる。
