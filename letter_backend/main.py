@@ -6,6 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware #CORSミドルウェア。異
 
 app=FastAPI() #FastAPIのインスタンスを作成
 
+@app.get("/")
+def read_root():
+    return {"message": "Hello, world!"}
+
 #CORSミドルウェアを追加。フロントエンドとバックエンドの通信を許可するための設定。
 app.add_middleware(
     CORSMiddleware,
