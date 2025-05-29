@@ -9,7 +9,9 @@ app=FastAPI() #FastAPIのインスタンスを作成
 #CORSミドルウェアを追加。フロントエンドとバックエンドの通信を許可するための設定。
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"], #許可するオリジン。フロントエンドのURL。
+    allow_origins=["http://localhost:3000",
+                   "https://letter-backend-eqrq.onrender.com",
+                   ], #許可するオリジン。フロントエンドのURL。
     allow_credentials=True,
     allow_methods=["*"], #許可するHTTPメソッド。全てのメソッドを許可。
     allow_headers=["*"], #許可するHTTPヘッダー。全てのヘッダーを許可。
@@ -24,7 +26,7 @@ class Letter(BaseModel):
 
 # データベースとのコネクションを確立
 DATABASE_URL=os.environ.get("DATABASE_URL")
-conn=psycopg2.connect(DATABASE_URL)
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 #ルートエンドポイント。POSTリクエストでメッセージを返す。
 @app.post("/letters/")#()内のURLにPOSTリクエストが来たら、この関数が呼ばれる。
