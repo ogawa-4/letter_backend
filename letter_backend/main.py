@@ -1,3 +1,4 @@
+import os
 import psycopg2
 from fastapi import FastAPI
 from pydantic import BaseModel #データ検証ライブラリ。データの整合性チェック。
@@ -5,10 +6,14 @@ from fastapi.middleware.cors import CORSMiddleware #CORSミドルウェア。異
 
 app=FastAPI() #FastAPIのインスタンスを作成
 
+@app.get("/")
+def read_root():
+    return {"message": "Hello, world!"}
+
 #CORSミドルウェアを追加。フロントエンドとバックエンドの通信を許可するための設定。
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"], #許可するオリジン。フロントエンドのURL。
+    allow_origins=["*"], #許可するオリジン。フロントエンドのURL。
     allow_credentials=True,
     allow_methods=["*"], #許可するHTTPメソッド。全てのメソッドを許可。
     allow_headers=["*"], #許可するHTTPヘッダー。全てのヘッダーを許可。
@@ -22,7 +27,8 @@ class Letter(BaseModel):
     longitude: float
 
 # データベースとのコネクションを確立
-conn=psycopg2.connect("host=localhost dbname=letter_db user=ogawa password=SYugo1002")
+DATABASE_URL=os.environ.get("DATABASE_URL")
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 #ルートエンドポイント。POSTリクエストでメッセージを返す。
 @app.post("/letters/")#()内のURLにPOSTリクエストが来たら、この関数が呼ばれる。
