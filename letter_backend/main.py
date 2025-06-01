@@ -9,7 +9,7 @@ app=FastAPI() #FastAPIのインスタンスを作成
 #CORSミドルウェアを追加。フロントエンドとバックエンドの通信を許可するための設定。
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://letter-frontend.onrender.com"], #許可するオリジン。フロントエンドのURL。
+    allow_origins=["*"], #許可するオリジン。フロントエンドのURL。
     allow_credentials=True,
     allow_methods=["*"], #許可するHTTPメソッド。全てのメソッドを許可。
     allow_headers=["*"], #許可するHTTPヘッダー。全てのヘッダーを許可。
