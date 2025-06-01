@@ -30,20 +30,6 @@ class Letter(BaseModel):
 DATABASE_URL=os.environ.get("DATABASE_URL")
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
-"""
-#ルートエンドポイント。POSTリクエストでメッセージを返す。
-@app.post("/letters/")#()内のURLにPOSTリクエストが来たら、この関数が呼ばれる。
-def create_letter(letter: Letter):#Letterクラスを引数として受け取る。
-    cur=conn.cursor() #カーソルを作成。データベース操作のためのオブジェクト。
-    cur.execute("""
-                INSERT INTO letter (content, gps)
-                VALUES (%s, ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography)
-            """,(letter.content, letter.longitude, letter.latitude))
-    conn.commit()
-    cur.close()
-    return {"message": "手紙を残したよ！"}
-"""
-
 @app.post("/letters/")
 def create_letter(letter: Letter):
     cur = conn.cursor()
