@@ -6,18 +6,18 @@ from fastapi.middleware.cors import CORSMiddleware #CORSミドルウェア。異
 
 app=FastAPI() #FastAPIのインスタンスを作成
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello, world!"}
-
 #CORSミドルウェアを追加。フロントエンドとバックエンドの通信を許可するための設定。
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], #許可するオリジン。フロントエンドのURL。
+    allow_origins=["https://letter-frontend.onrender.com"], #許可するオリジン。フロントエンドのURL。
     allow_credentials=True,
     allow_methods=["*"], #許可するHTTPメソッド。全てのメソッドを許可。
     allow_headers=["*"], #許可するHTTPヘッダー。全てのヘッダーを許可。
 )
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello, world!"}
 
 #リクエストのデータ構造を定義するクラス。
 #Pydanticを使って、データの形を定義。
