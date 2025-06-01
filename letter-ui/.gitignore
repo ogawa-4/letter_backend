@@ -1,0 +1,5 @@
+# node_modulesとビルドファイルはGitに入れない
+node_modules/
+dist/
+.env
+.DS_Store
