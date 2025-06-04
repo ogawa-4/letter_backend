@@ -1,6 +1,6 @@
 import os
 import psycopg2
-from fastapi import FastAPI
+from fastapi import FastAPI,HTTPException, Query
 from pydantic import BaseModel #データ検証ライブラリ。データの整合性チェック。
 from fastapi.middleware.cors import CORSMiddleware #CORSミドルウェア。異なるオリジン間のリクエストを許可するためのもの。
 
@@ -99,3 +99,15 @@ def get_nearby_letters(latitude: float, longitude: float, max_distance: float = 
         for row in rows
     ]
     return {"letters": letters}
+
+#手紙削除用のAPI
+@app.delete("/delete_letter/")
+def delete_letter(letter_id: int, password: str = Query(...)):
+    if password != "your_secret_password":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    cur = conn.cursor()
+    cur.execute("DELETE FROM letter WHERE id = %s", (letter_id,))
+    conn.commit()
+    cur.close()
+    return {"message": f"Letter {letter_id} deleted"}
