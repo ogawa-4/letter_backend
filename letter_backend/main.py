@@ -103,7 +103,7 @@ def get_nearby_letters(latitude: float, longitude: float, max_distance: float = 
 #手紙削除用のAPI
 @app.delete("/delete_letter/")
 def delete_letter(letter_id: int, password: str = Query(...)):
-    if password != "your_secret_password":
+    if password != "memories":
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     cur = conn.cursor()
