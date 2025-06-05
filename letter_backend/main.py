@@ -17,7 +17,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"message": "Hello, world!"}
+    return {"message": "Hello!"}
 
 #リクエストのデータ構造を定義するクラス。
 #Pydanticを使って、データの形を定義。
@@ -30,6 +30,7 @@ class Letter(BaseModel):
 DATABASE_URL=os.environ.get("DATABASE_URL")
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
+#手紙作成用のAPIエンドポイント。
 @app.post("/letters/")
 def create_letter(letter: Letter):
     cur = conn.cursor()
@@ -99,15 +100,3 @@ def get_nearby_letters(latitude: float, longitude: float, max_distance: float = 
         for row in rows
     ]
     return {"letters": letters}
-
-#手紙削除用のAPI
-@app.delete("/delete_letter/")
-def delete_letter(letter_id: int, password: str = Query(...)):
-    if password != "memories":
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-    cur = conn.cursor()
-    cur.execute("DELETE FROM letter WHERE id = %s", (letter_id,))
-    conn.commit()
-    cur.close()
-    return {"message": f"Letter {letter_id} deleted"}
