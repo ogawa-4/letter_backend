@@ -15,18 +15,18 @@ app.add_middleware(
     allow_headers=["*"], #許可するHTTPヘッダー。全てのヘッダーを許可。
 )
 
+#ログ用
 @app.get("/")
 def read_root():
     return {"message": "Hello!"}
 
-#リクエストのデータ構造を定義するクラス。
 #Pydanticを使って、データの形を定義。
 class Letter(BaseModel):
     content: str
     latitude: float
     longitude: float
 
-# データベースとのコネクションを確立
+# DB接続、Renderの環境変数から取得。
 DATABASE_URL=os.environ.get("DATABASE_URL")
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
