@@ -73,22 +73,28 @@ def get_letters():
 #引数として、緯度、経度、最大距離を受け取る。'max_distance'は半径何メートルまでの手紙を取得するか。
 @app.get("/nearby_letters/")
 def get_nearby_letters(latitude: float, longitude: float, max_distance: float = 100.0): 
-    cur=conn.cursor()
+    cur = conn.cursor()
 
-    #ST_SetSRID(ST_MakePoint())で緯度経度から場所の点を作成。
-    #ST_DWithinで指定した距離内にあるかどうかをチェック。
-    #ST_Distanceで距離を計算。
     cur.execute("""
-                SELECT id, content, date_time, ST_X(gps::geometry), ST_Y(gps::geometry),
-                ST_Distance(gps, ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography) AS distance FROM letter
-                WHERE ST_DWithin(gps, ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography, %s)
-                """,(longitude, latitude, longitude, latitude, max_distance))
+        SELECT
+            id,
+            CASE
+                WHEN ST_Distance(gps, ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography) <= 15
+                    THEN content
+                ELSE NULL
+            END as content,
+            date_time,
+            ST_X(gps::geometry) as longitude,
+            ST_Y(gps::geometry) as latitude,
+            ST_Distance(gps, ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography) AS distance
+        FROM letter
+        WHERE ST_DWithin(gps, ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography, %s)
+    """, (longitude, latitude, longitude, latitude, longitude, latitude, max_distance))
     
-    rows=cur.fetchall()
+    rows = cur.fetchall()
     cur.close()
 
-    # データベースから取得した手紙の情報を辞書形式に変換。
-    letters=[
+    letters = [
         {
             "id": row[0],
             "content": row[1],
