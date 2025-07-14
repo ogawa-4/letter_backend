@@ -72,7 +72,7 @@ def get_letters():
 #GETリクエストで近くの手紙を取得するエンドポイント。
 #引数として、緯度、経度、最大距離を受け取る。'max_distance'は半径何メートルまでの手紙を取得するか。
 @app.get("/nearby_letters/")
-def get_nearby_letters(latitude: float, longitude: float, max_distance: float = 1000.0): 
+def get_nearby_letters(latitude: float, longitude: float, max_distance: float = 50.0): 
     cur = conn.cursor()
 
     cur.execute("""
